@@ -13,6 +13,7 @@ int main(){
 	int i;
 	for(i=0; i<strlen(texto); i++){//strlen calcula o tamanho da string char(texto)
 		fputc(texto[i], f);//imprime caractere a caractere
+		fputc(' ', f);//caractere com espaço, caso queira imprimir tudo junto só retirar essa linha;
 	}
 	fclose(f);//fecha o programa
 	return 0;
