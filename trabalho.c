@@ -8,21 +8,21 @@ typedef struct {
 
 //calcula a área do triângulo
 float AreaTriangulo(Ponto A, Ponto B, Ponto C) {
-    float deter, area;
+    float deter, area;//variaveis do tipo float deter(determinante) área(area)
     deter = ((A.x * B.y) + (A.y * C.x) + (B.x * C.y)) - ((B.y * C.x) + (A.x * C.y) + (A.y * B.x));//calcula o determinante
     area = deter / 2;//calcula a área dividindo o determinante por 2
-    return area;
+    return area;//retorna área
 }
 
 //calcula a área do polígono
 float AreaPoligono(Ponto *lados, int numLados) {
-    float areaTotal = 0.0;
+    float areaTotal = 0.0;//variavel do tipo float para area total
     int i;
     // Dividir o polígono em triângulos e somar as áreas
     for (i = 1; i < numLados - 1; i++) {
         areaTotal += AreaTriangulo(lados[0], lados[i], lados[i + 1]);
     }
-    return areaTotal;
+    return areaTotal;//retorna a area total
 }
 
 Ponto* lerVertices(FILE *arquivo, int *numLados) {
@@ -32,8 +32,8 @@ Ponto* lerVertices(FILE *arquivo, int *numLados) {
     // Aloca memória 
     Ponto *lados = (Ponto*) malloc(*numLados * sizeof(Ponto));
     if (lados == NULL) {
-        printf("Erro ao alocar memoria\n");
-        exit(1);
+        printf("Erro ao alocar memoria\n");//mensagem de erro caso apresente erro ao alocar a memória 
+        exit(1);//encerra o programa se apresentar erro ao alocar a memória
     }
 
     // Ler as coordenadas dos vértices do triangulo, determinadas no arquivo
@@ -41,7 +41,7 @@ Ponto* lerVertices(FILE *arquivo, int *numLados) {
     for (i = 0; i < *numLados; i++) {
         fscanf(arquivo, "%f %f", &lados[i].x, &lados[i].y);
     }
-    return lados;
+    return lados;//retorna as coordenadas 
 }
 
 int main() {
@@ -50,21 +50,21 @@ int main() {
     FILE *arquivo;//abre arquivo
     arquivo = fopen("TrianguloABC.txt", "r");//abre o arquivo para leitura
     if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo\n");
+        printf("Erro ao abrir o arquivo\n");//mensagem de erro, caso apresente erros ao abrir o arquivo
         return 1;
     }
 
     Ponto *lados = lerVertices(arquivo, &numLados);//ler os dados do arquivo
     fclose(arquivo);//fecha o arquivo
 
-    float area = AreaPoligono(lados, numLados);//função que calcula a área do polígono
+    float area = AreaPoligono(lados, numLados);//chama a função que calcula a área do polígono
     
     if (area < 0) {
         area *= -1; // Multiplica por -1 para tornar positiva, se caso a área for negativa
     }
-    printf("A area do poligono e: %.2f\n", area);//imprime a área do polígono no prompt
+    printf("A area do poligono e: %.2f\n", area);//imprime a área do polígono no prompt de comando
    
-    // Liberar memória alocada
+    // Libera memória alocada
     free(lados);
     return 0;
 }
