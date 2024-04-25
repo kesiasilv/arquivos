@@ -6,43 +6,65 @@ typedef struct {
     float y;
 } Ponto;
 
-// Função para calcular a área do triângulo
+//calcula a área do triângulo
 float AreaTriangulo(Ponto A, Ponto B, Ponto C) {
     float deter, area;
-    deter = abs((A.x * B.y) + (A.y * C.x) + (B.x * C.y)) - ((B.y * C.x) + (A.x * C.y) + (A.y * B.x));
-	area = deter / 2;
+    deter = ((A.x * B.y) + (A.y * C.x) + (B.x * C.y)) - ((B.y * C.x) + (A.x * C.y) + (A.y * B.x));//calcula o determinante
+    area = deter / 2;//calcula a área dividindo o determinante por 2
     return area;
 }
 
+//calcula a área do polígono
+float AreaPoligono(Ponto *lados, int numLados) {
+    float areaTotal = 0.0;
+    int i;
+    // Dividir o polígono em triângulos e somar as áreas
+    for (i = 1; i < numLados - 1; i++) {
+        areaTotal += AreaTriangulo(lados[0], lados[i], lados[i + 1]);
+    }
+    return areaTotal;
+}
+
+Ponto* lerVertices(FILE *arquivo, int *numLados) {
+    // Ler o número de lados do polígono no arquivo
+    fscanf(arquivo, "%d", numLados);
+
+    // Aloca memória 
+    Ponto *lados = (Ponto*) malloc(*numLados * sizeof(Ponto));
+    if (lados == NULL) {
+        printf("Erro ao alocar memoria\n");
+        exit(1);
+    }
+
+    // Ler as coordenadas dos vértices do triangulo, determinadas no arquivo
+    int i;
+    for (i = 0; i < *numLados; i++) {
+        fscanf(arquivo, "%f %f", &lados[i].x, &lados[i].y);
+    }
+    return lados;
+}
+
 int main() {
-    Ponto A, B, C;
-    float area;
-    FILE *p;
-    p = fopen("TrianguloABC.txt", "w");
-    if(p == NULL){
-    	printf("Erro ao abrir o arquivo");
-    	exit(1);
-	}
+    int numLados;
+	
+    FILE *arquivo;//abre arquivo
+    arquivo = fopen("TrianguloABC.txt", "r");//abre o arquivo para leitura
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo\n");
+        return 1;
+    }
 
-    // Solicitar as coordenadas dos vértices ao usuário
-    printf("Digite as vertices do ponto A: ");
-    scanf("%f %f", &A.x, &A.y);
+    Ponto *lados = lerVertices(arquivo, &numLados);//ler os dados do arquivo
+    fclose(arquivo);//fecha o arquivo
 
-    printf("Digite as vertices do ponto B: ");
-    scanf("%f %f", &B.x, &B.y);
-
-    printf("Digite as vertices do ponto C: ");
-	scanf("%f %f", &C.x, &C.y);
-
-    area = AreaTriangulo(A, B, C);
-
-    // Exibir o resultado
-    fprintf(p,"%.2f %.2f\n", A.x, A.y);
-    fprintf(p,"%.2f %.2f\n", B.x, B.y);
-    fprintf(p,"%.2f %.2f\n", C.x, C.y);
+    float area = AreaPoligono(lados, numLados);//função que calcula a área do polígono
     
-    fprintf(p,"A area do triangulo e: %.2f\n", area);
-    
-	fclose(p);
+    if (area < 0) {
+        area *= -1; // Multiplica por -1 para tornar positiva, se caso a área for negativa
+    }
+    printf("A area do poligono e: %.2f\n", area);//imprime a área do polígono no prompt
+   
+    // Liberar memória alocada
+    free(lados);
     return 0;
 }
